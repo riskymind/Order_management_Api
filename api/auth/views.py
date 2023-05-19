@@ -64,8 +64,8 @@ class Login(Resource):
         """
         Login in user and generate jwt
         """
-        data = request.get_json()
-
+        # data = request.get_json()
+        data = auth_namespace.payload
         email = data.get('email')
         password = data.get('password')
 
