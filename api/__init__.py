@@ -8,6 +8,7 @@ from .model.orders import Order
 from .model.users import User
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
+from werkzeug.exceptions import NotFound, MethodNotAllowed
 
 
 def create_app(config=config_dict['dev']):
@@ -23,6 +24,14 @@ def create_app(config=config_dict['dev']):
     db.init_app(app)
     jwt = JWTManager(app)
     migrate = Migrate(app, db)
+
+    @api.errorhandler(NotFound)
+    def not_found(error):
+        return {"error": "Not Found"}, 404
+
+    @api.errorhandler(MethodNotAllowed)
+    def method_not_allowed(error):
+        return {"message": "Method not allowed"}, 405
 
     @app.shell_context_processor
     def make_shell_context():
