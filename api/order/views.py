@@ -9,11 +9,22 @@ order_namespace = Namespace('order', description='Order namespace')
 
 order_model = order_namespace.model(
     'Order', {
+        'size': fields.String(description='order size', required=True,
+                              enum=['SMALL', 'MEDIUM', 'LARGE', 'EXTRA_LARGE']),
+        'order_status': fields.String(description='order status', required=True,
+                                      enum=['PENDING', 'IN_TRANSIT', 'DELIVERED']),
+        'flavour': fields.String(description='flavour')
+    }
+)
+
+order_response_model = order_namespace.model(
+    'Orders', {
         'id': fields.Integer(description='order id'),
         'size': fields.String(description='order size', required=True,
                               enum=['SMALL', 'MEDIUM', 'LARGE', 'EXTRA_LARGE']),
         'order_status': fields.String(description='order status', required=True,
-                                      enum=['PENDING', 'IN_TRANSIT', 'DELIVERED'])
+                                      enum=['PENDING', 'IN_TRANSIT', 'DELIVERED']),
+        'flavour': fields.String(description='flavour')
     }
 )
 
@@ -21,7 +32,7 @@ order_model = order_namespace.model(
 @order_namespace.route('/orders')
 class PlaceOrGetOrder(Resource):
 
-    @order_namespace.marshal_list_with(order_model)
+    @order_namespace.marshal_list_with(order_response_model)
     @jwt_required()
     def get(self):
         """
@@ -32,7 +43,7 @@ class PlaceOrGetOrder(Resource):
         return orders, HTTPStatus.OK
 
     @order_namespace.expect(order_model)
-    @order_namespace.marshal_with(order_model)
+    @order_namespace.marshal_with(order_response_model)
     @jwt_required()
     def post(self):
         """
@@ -56,7 +67,7 @@ class PlaceOrGetOrder(Resource):
 @order_namespace.route('/<int:order_id>')
 class GetUpdateOrDeleteOrder(Resource):
 
-    @order_namespace.marshal_with(order_model)
+    @order_namespace.marshal_with(order_response_model)
     @jwt_required()
     def get(self, order_id: int):
         """
@@ -67,7 +78,7 @@ class GetUpdateOrDeleteOrder(Resource):
         order = Order.get_by_id(order_id)
         return order, HTTPStatus.OK
 
-    @order_namespace.marshal_with(order_model)
+    @order_namespace.marshal_with(order_response_model)
     @order_namespace.expect(order_model)
     @jwt_required()
     def put(self, order_id):
@@ -84,7 +95,7 @@ class GetUpdateOrDeleteOrder(Resource):
         db.session.commit()
         return order_to_update, HTTPStatus.OK
 
-    @order_namespace.marshal_with(order_model)
+    @order_namespace.marshal_with(order_response_model)
     @jwt_required()
     def delete(self, order_id):
         """
@@ -99,7 +110,7 @@ class GetUpdateOrDeleteOrder(Resource):
 
 @order_namespace.route('/user/<int:user_id>/order/<int:order_id>')
 class GetUserOrder(Resource):
-    @order_namespace.marshal_with(order_model)
+    @order_namespace.marshal_with(order_response_model)
     @jwt_required()
     def get(self, user_id: int, order_id: int):
         """
@@ -115,7 +126,7 @@ class GetUserOrder(Resource):
 
 @order_namespace.route('/user/<int:user_id>/orders')
 class UserOrders(Resource):
-    @order_namespace.marshal_list_with(order_model)
+    @order_namespace.marshal_list_with(order_response_model)
     @jwt_required()
     def get(self, user_id: int):
         """
@@ -131,7 +142,7 @@ class UserOrders(Resource):
 @order_namespace.route('/order/status/<int:order_id>')
 class UpdateOrderStatus(Resource):
     @order_namespace.expect(order_model)
-    @order_namespace.marshal_with(order_model)
+    @order_namespace.marshal_with(order_response_model)
     @jwt_required()
     def patch(self, order_id: int):
         """

@@ -10,7 +10,6 @@ auth_namespace = Namespace('auth', description='authentication namespace')
 
 signup_model = auth_namespace.model(
     'SignUp', {
-        'id': fields.Integer(),
         'username': fields.String(required=True, description='User name'),
         'email': fields.String(required=True, description='User email'),
         'password': fields.String(required=True, description='User password')
@@ -46,18 +45,18 @@ class SignUp(Resource):
         """
         data = request.get_json()
         # data = auth_namespace.payload
-        try:
-            new_user = User(
-                username=data.get('username'),
-                email=data.get('email'),
-                password_hash=generate_password_hash(data.get('password'))
-            )
+        # try:
+        new_user = User(
+            username=data.get('username'),
+            email=data.get('email'),
+            password_hash=generate_password_hash(data.get('password'))
+        )
 
-            new_user.save()
+        new_user.save()
 
-            return new_user, HTTPStatus.CREATED
-        except Exception as e:
-            raise Conflict(f"User with email {data.get('email')} exists")
+        return new_user, HTTPStatus.CREATED
+    # except Exception as e:
+    # raise Conflict(f"User with email {data.get('email')} exists")
 
 
 @auth_namespace.route('/login')
