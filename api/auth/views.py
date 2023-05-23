@@ -39,6 +39,9 @@ login_model = auth_namespace.model(
 class SignUp(Resource):
     @auth_namespace.expect(signup_model)
     @auth_namespace.marshal_with(user_model)
+    @auth_namespace.doc(
+        description='Sign up user'
+    )
     def post(self):
         """
         Sign up users
@@ -62,6 +65,9 @@ class SignUp(Resource):
 @auth_namespace.route('/login')
 class Login(Resource):
     @auth_namespace.expect(login_model)
+    @auth_namespace.doc(
+        description='Login user'
+    )
     def post(self):
         """
         Login in user and generate jwt

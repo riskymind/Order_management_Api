@@ -33,6 +33,9 @@ order_response_model = order_namespace.model(
 class PlaceOrGetOrder(Resource):
 
     @order_namespace.marshal_list_with(order_response_model)
+    @order_namespace.doc(
+        description='Get all orders'
+    )
     @jwt_required()
     def get(self):
         """
@@ -44,6 +47,9 @@ class PlaceOrGetOrder(Resource):
 
     @order_namespace.expect(order_model)
     @order_namespace.marshal_with(order_response_model)
+    @order_namespace.doc(
+        description='Create an Order'
+    )
     @jwt_required()
     def post(self):
         """
@@ -68,6 +74,9 @@ class PlaceOrGetOrder(Resource):
 class GetUpdateOrDeleteOrder(Resource):
 
     @order_namespace.marshal_with(order_response_model)
+    @order_namespace.doc(
+        description='Get a specific Order'
+    )
     @jwt_required()
     def get(self, order_id: int):
         """
@@ -80,6 +89,9 @@ class GetUpdateOrDeleteOrder(Resource):
 
     @order_namespace.marshal_with(order_response_model)
     @order_namespace.expect(order_model)
+    @order_namespace.doc(
+        description='Update a specific order'
+    )
     @jwt_required()
     def put(self, order_id):
         """
@@ -96,6 +108,9 @@ class GetUpdateOrDeleteOrder(Resource):
         return order_to_update, HTTPStatus.OK
 
     @order_namespace.marshal_with(order_response_model)
+    @order_namespace.doc(
+        description='Delete a specific Order'
+    )
     @jwt_required()
     def delete(self, order_id):
         """
@@ -111,6 +126,9 @@ class GetUpdateOrDeleteOrder(Resource):
 @order_namespace.route('/user/<int:user_id>/order/<int:order_id>')
 class GetUserOrder(Resource):
     @order_namespace.marshal_with(order_response_model)
+    @order_namespace.doc(
+        description='Get user specific order'
+    )
     @jwt_required()
     def get(self, user_id: int, order_id: int):
         """
@@ -127,6 +145,9 @@ class GetUserOrder(Resource):
 @order_namespace.route('/user/<int:user_id>/orders')
 class UserOrders(Resource):
     @order_namespace.marshal_list_with(order_response_model)
+    @order_namespace.doc(
+        description='Get all Order from a specific user'
+    )
     @jwt_required()
     def get(self, user_id: int):
         """
